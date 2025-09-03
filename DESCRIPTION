@@ -1,0 +1,42 @@
+Package: FASTAptameR
+Title: This Package Analyzes Sequence Populations from Combinatorial Selections Experiments
+Version: 0.0.1.0000
+Authors@R: 
+    person("Skyler", "Kramer", , "skramer@missouri.edu", role = c("aut", "cre"),
+           comment = c(ORCID = "test"))
+Description: FASTAptameR (2025) is an R-based reimplementation of the original FASTAptamer (2015) program. This series of tools is designed to process sequences that result from combinatorial selections experiments like SELEX or phage display. The analyses are designed to be modular, fully customizable, and easy to use.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+LazyData: true
+Imports: 
+    aphid,
+    Biostrings,
+    cppRouting,
+    data.table,
+    dplyr,
+    edgeR,
+    factoextra,
+    ggplot2,
+    gtools,
+    glue,
+    infotheo,
+    janitor,
+    kmer,
+    LaF,
+    magrittr,
+    methods,
+    msa,
+    plotly,
+    plyr,
+    rlang,
+    stats,
+    stringr,
+    tibble,
+    tidyr,
+    umap,
+    UpSetR,
+    utils
+Depends: 
+    R (>= 2.10)

@@ -1,0 +1,228 @@
+# Copyright (C) 2022 Skyler T. Kramer
+# Full GNU GPL version 3 license found in LICENSE.txt
+
+countTab <- tabPanel(
+  "Count",
+  
+  # settings for error notifications
+  tags$head(tags$style(HTML(".shiny-notification {position:fixed; top: calc(50%); left: calc(50%);}"))),
+  
+  sidebarLayout(
+    sidebarPanel(
+      
+      # ask for input file
+      fileInput(
+        "countInput",
+        label = strong("Choose data to count*:"),
+        multiple = FALSE,
+        placeholder = "FASTQ or FASTA file",
+        accept = c(
+          '.FASTQ', '.FQ', '.fastq', '.fq',
+          '.FASTA', '.FA', '.fasta', '.fa',
+          '.GZ', '.gz'
+        )
+      ),
+      shinyBS::bsTooltip(
+        "countInput",
+        "Please note that while GZ-compressed files are acceptable inputs, *.tar.gz files are not."
+      ),
+      
+      # file upload warning
+      strong("*Do not start until loading bar shows 'Upload complete'."),
+      
+      # optional file upload via github
+      p(HTML(paste0(
+        "Sample data is available from ",
+        a(href = "https://github.com/SkylerKramer/AptamerLibrary", "here", .noWS = "outside", target = "_blank"),
+        "."
+      ))),
+      
+      
+      # slider to select scaling factor (default is 1e6, which leads to RPM)
+      radioButtons(
+        "countButton_scalingFactor",
+        label = strong("What value should be used to normalize read counts?"),
+        choices = c(1e0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6), selected = 1e6,
+        inline = TRUE
+      ),
+      shinyBS::bsTooltip(
+        "countButton_scalingFactor",
+        "1e0, 1e3, and 1e6 are 'Reads', 'Reads per Thousand', and 'Reads per Million', respectively."
+      ),
+      
+      # optionally generate reverse complement of sequences
+      radioButtons(
+        "reverseComplement",
+        label = strong("Return reverse complement of sequences?"),
+        choices = c("Yes", "No"), selected = "No",
+        inline = TRUE
+      ),
+      shinyBS::bsTooltip("reverseComplement", "Optionally return the reverse complement of the input sequences?"),
+      
+      # select file type for download
+      radioButtons(
+        "countDownloadType",
+        label = strong("FASTA or CSV download?"),
+        choices = c("FASTA", "CSV"), selected = "FASTA",
+        inline = TRUE
+      ),
+      shinyBS::bsTooltip("countDownloadType", "FASTA is required for subsequent modules; CSV retains all features from data table"),
+      
+      # start button
+      actionButton("countStart", label = h5("Start"), style='padding:11px; font-size:80%'),
+      
+      # download button
+      downloadButton("countDownload", label = h5("Download"), style='padding:2px; font-size:80%'),
+      
+      # add space
+      tags$br(),
+      tags$br(),
+      
+      # Count messages
+      strong(uiOutput("countUI_seqCounts")),
+      
+      # show console output
+      shinyjs::useShinyjs(),
+      strong(textOutput("countTextOutput")),
+      
+      # horizontal line
+      tags$hr(style="border-color: black;"),
+      
+      # slider for minimum number of reads in "Reads per Rank" plot
+      sliderInput(
+        "countSlider_minReads",
+        label = strong("Min. number of reads to plot:"),
+        min = 0, max = 1000,
+        value = 10, step = 10
+      ),
+      shinyBS::bsTooltip("countSlider_minReads", "What is the min. number of reads to plot?"),
+      
+      # slider for maximum rank in "Reads per Rank" plot
+      sliderInput(
+        "countSlider_maxRanks",
+        label = strong("Max. rank to plot:"),
+        min = 10, max = 1000,
+        value = 100, step = 10
+      ),
+      shinyBS::bsTooltip("countSlider_maxRanks", "How many of the top ranks should be plotted?"),
+      
+      # plot customizations for RPR plot
+      radioButtons(
+        "count_rpr_custom",
+        label = strong("Adjust default reads-per-rank plot?"),
+        choices = c("Yes","No"), selected = "No",
+        inline = TRUE
+      ),
+      shinyBS::bsTooltip("count_rpr_custom", "Customize plot components?"),
+      
+      conditionalPanel(
+        condition = "input.count_rpr_custom == 'Yes'",
+        
+        # text input for x-axis, y-axis, legend title, and plot title
+        textAreaInput("count_rpr_xaxis", label = strong("X-axis - represents sequence rank."), value = "Ranks of unique sequences"),
+        textAreaInput("count_rpr_yaxis", label = strong("Y-axis - represents sequence abundance."), value = "Total reads per unique sequence"),
+        textAreaInput("count_rpr_title", label = strong("Plot title."), value = "Read count for each rank"),
+        colourpicker::colourInput("count_rpr_linecolour", "Color for plot line.", "skyblue"),
+      ),
+      
+      # Reads per rank plot
+      actionButton("count_rprPlotStart", label = h5("Reads per rank"), style='padding:11px; font-size:80%'),
+      shinyBS::bsTooltip("count_rprPlotStart", "Shows a line plot comparing reads and ranks of unique sequences"),
+      shinyBS::bsModal(
+        id = "count_rprPlotWindow",
+        title = "Reads per rank",
+        trigger = "count_rprPlotStart",
+        size = "large",
+        shinycssloaders::withSpinner(plotly::plotlyOutput("count_rprPlotOutput"))
+      ),
+      
+      # horizontal line
+      tags$hr(style="border-color: black;"),
+      
+      # plot customizations for sequence length histogram
+      radioButtons(
+        "count_histogram_custom",
+        label = strong("Adjust default sequence-length histogram?"),
+        choices = c("Yes","No"), selected = "No",
+        inline = TRUE
+      ),
+      shinyBS::bsTooltip("count_histogram_custom", "Customize plot components?"),
+      
+      conditionalPanel(
+        condition = "input.count_histogram_custom == 'Yes'",
+        
+        # text input for x-axis, y-axis, legend title, and plot title
+        textAreaInput("count_histogram_xaxis", label = strong("X-axis - represents sequence length."), value = "Sequence length"),
+        textAreaInput("count_histogram_yaxis1", label = strong("Y-axis 1 - represents unique sequence count."), value = "Unique sequences"),
+        textAreaInput("count_histogram_yaxis2", label = strong("Y-axis 2 - represents total sequence count."), value = "Read count"),
+        textAreaInput("count_histogram_title", label = strong("Plot title."), value = "Sequence-length histogram"),
+        colourpicker::colourInput("count_histogram_baroutline", "Color for bar outline.", "black"),
+        colourpicker::colourInput("count_histogram_barfill", "Color for bar fill.", "skyblue")
+      ),
+      
+      # start button for seq. length histogram
+      actionButton("count_seqHistStart", label = h5("Sequence-length histogram"), style='padding:11px; font-size:80%'),
+      shinyBS::bsTooltip("count_seqHistStart", "Shows a histogram of sequence lengths."),
+      shinyBS::bsModal(
+        id = "count_seqHistWindow",
+        title = "Sequence-length histogram",
+        trigger = "count_seqHistStart",
+        size = "large",
+        shinycssloaders::withSpinner(plotly::plotlyOutput("count_seqHistOutput", height = "650px"))
+      ),
+      
+      # horizontal line
+      tags$hr(style="border-color: black;"),
+      
+      # plot customizations for binned abundance plot
+      radioButtons(
+        "count_abundance_custom",
+        label = strong("Adjust default abundance plot?"),
+        choices = c("Yes","No"), selected = "No",
+        inline = TRUE
+      ),
+      shinyBS::bsTooltip("count_abundance_custom", "Customize plot components?"),
+      
+      # only show this panel if the user wants to use adjust bins
+      conditionalPanel(
+        condition = "input.count_abundance_custom == 'Yes'",
+        
+        # radio button to ask user about using singletons
+        radioButtons(
+          "count_abundance_singleton",
+          label = strong("Should singletons be a separate category?"),
+          choices = c("Yes","No"),
+          selected = "Yes",
+          inline = TRUE
+        ),
+        shinyBS::bsTooltip("count_abundance_singleton", "If 'Yes' (DEFAULT), then singletons are a separate category."),
+        
+        # text input for users to change breaks
+        textAreaInput("count_abundance_newBreaks", label = strong("Comma-separated breakpoints."), value = "10,100,1000"),
+        shinyBS::bsTooltip("count_abundance_newBreaks", "For example: 10,100,1000."),
+        
+        # text input for x-axis, y-axis, legend title, and plot title
+        textAreaInput("count_abundance_xaxis", label = strong("X-axis - represents unique sequence count."), value = "Read count"),
+        textAreaInput("count_abundance_yaxis", label = strong("Y-axis - represents fraction of population."), value = "Fraction of population"),
+        textAreaInput("count_abundance_title", label = strong("Plot title."), value = "Binned sequence abundance"),
+        colourpicker::colourInput("count_abundance_baroutline", "Color for bar outline.", "black"),
+        colourpicker::colourInput("count_abundance_barfill", "Color for bar fill.", "skyblue")
+      ),
+      
+      # start button for abundance plot
+      actionButton("count_abPlotStart", label = h5("Abundance plot"), style='padding:11px; font-size:80%'),
+      shinyBS::bsTooltip("count_abPlotStart", "Shows the binned abundance of sequences."),
+      shinyBS::bsModal(
+        id = "count_abPlotWindow",
+        title = "Binned abundance plot",
+        trigger = "count_abPlotStart",
+        size = "large",
+        shinycssloaders::withSpinner(plotly::plotlyOutput("count_abPlotOutput", height = "650px"))
+      )
+    ),
+    
+    # display count output as data.table
+    mainPanel(shinycssloaders::withSpinner(DT::dataTableOutput("countOutput")))
+  )
+)
+

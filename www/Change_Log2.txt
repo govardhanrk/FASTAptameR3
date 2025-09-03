@@ -1,0 +1,192 @@
+<p><b>FASTAptameR 3.0</b></p>
+
+<p>Improved maintainability:</p>
+<ul>
+  <li>Moved input checks to new file</li>
+  <li>Moved server components to new files</li>
+  <li>Standardized object naming and sequence ID parsing</li>
+</ul>
+
+<p>General updates:</p>
+<ul>
+  <li>Added pop-up splash page</li>
+  <li>Corrected crash-on-refresh bug</li>
+  <li>Improved security via checks for all user inputs; new checks include slider bars and radio buttons</li>
+  <li>Corrected bug that prevented cluster-specific metadata from displaying in some modules</li>
+  <li>Improved adherence to the MVC software architecture</li>
+  <li>Adjusted all backend analyses (except for Preprocess and Count) such that their inputs are data frames (or lists of data frames), not file paths; this makes the backend package more useful for R users</li>
+  <li>All interactive plots have meaningful default names and are downloaded as SVG files; the UpSet plot from the Data Merge module is static and does not support SVG download</li>
+  <li>All plots allow the user to change axis titles, plot titles, legend titles, and colors</li>
+  <li>All plots except the UpSet plot now have the "mono" font family; the UpSet plot is not a ggplot2 object, so it cannot be customized in the same ways</li>
+  <li>All plots except those from Position Enrich are now rendered in pop-up tabs</li>
+  <li>Fixed warning in FASTA-CSV conversion that resulted because of how columns were named</li>
+  <li>Simplified the function that makes plot text bold</li>
+  <li>Altered text that appears on hover for most interactive plots</li>
+</ul>
+
+<p>Performance improvements:</p>
+<ul>
+  <li>Added table and plot caching</li>
+  <li>Every module now supports asynchronous programming</li>
+</ul>
+
+<p>Module updates:</p>
+<ul>
+  <li>Count:</li>
+    <ul>
+      <li>Renamed RPM as RPU + allowed for custom scaling factors when normalizing read counts (*e.g.*, reads per ten, thousand, million)</li>
+      <li>Modified to accept GZ-compressed files; *.tar.gz files not accepted; compressed files can be FASTQ or FASTA, but FASTA files must have sequence identifier line</li>
+      <li>Added calculation for Simpson's Index of Diversity</li>
+      <li>Changed y-axis labels in histograms</li>
+	  <li>The recommended breaks for the abundance plot are now the default values, instead of just a placeholder</li>
+	  <li>Changed internal logic of "reads-per-rank" plot such that the thresholds (min. reads and max. ranks) are inclusive</li>
+    </ul>
+  <li>Translate:</li>
+    <ul>
+      <li>Replaced convergence method with more concise Tidyverse implementation</li>
+      <li>Removed [A,C,G,T,U] requirement</li>
+      <li>Removed conversion of all sequences and translation modifications to uppercase (but all default translations use uppercase)</li>
+      <li>Simplified user input for translation modifications</li>
+      <li>Simplified translation formatting in backend</li>
+      <li>Changed height of window that displays sequence-length histogram such that the two histograms should no longer overlap with each other</li>
+    </ul>
+  <li>Motif Search:</li>
+    <ul>
+      <li>Revised tooltip for partial matches to better label AND vs OR operations</li>
+      <li>Omitted T->U replacement in nucleotide operations</li>
+    </ul>
+  <li>Motif Tracker:</li>
+    <ul>
+      <li>Corrected bug that only displayed enrichment values when aliases were provided</li>
+      <li>Changed output such that [percentage of sequences with motif] replaces [RPM]</li>
+      <li>Moved the italic text about selecting multiple files to a tooltip</li>
+    </ul>
+  <li>Motif Discover:</li>
+    <ul>
+      <li>Added column for number of sequences with motif</li>
+      <li>Wrote method to collapse short motifs into parent motifs that fully encapsulate them (*e.g.*, AATGC gets collapses into xxAATGCxx)</li>
+    </ul>
+  <li>Mutation Network:</li>
+    <ul>
+      <li>Optimized creation of the distance matrix (using stringdist instead of adist)</li>
+      <li>Switched the shortest path algorithm from bidirectional Dijkstra to A*</li>
+      <li>Enforced a maximum number of lines to upload</li>
+      <li>Changed to return the start and end nodes when no valid path is found (previous version returned a warning when no valid path was found)</li>
+      <li>Changed table download such that it will reflect user modifications (filtering and ordering)</li>
+    </ul>
+  <li>Distance:</li>
+    <ul>
+      <li>Omitted option for sequence truncation; accurate sub-sequence distances require an MSA, which could be quite computationally intensive</li>
+      <li>Changed y-axis labels in histograms</li>
+    </ul>
+  <li>Data Merge:</li>
+    <ul>
+      <li>Corrected bug in the persistence plot that made all bars equal to the total number of sequences in the merged data</li>
+      <li>Moved the italic text about selecting multiple files to a tooltip</li>
+    </ul>
+  <li>Sequence Enrich:</li>
+    <ul>
+      <li>Simplified the merging schemes</li>
+      <li>Added correction values to all RPUs in the RPU scatter plot</li>
+      <li>Corrected bug that prevented RPU scatter plot from rendering</li>
+      <li>Omitted the cluster boxplot</li>
+      <li>Added distinct file uploads for the two expected files, instead of a single file browser for both files</li>
+      <li>Changed plot themes from "classic" to "bw"</li>
+      <li>Omitted the angled text from the histogram</li>
+    </ul>
+  <li>Cluster:</li>
+    <ul>
+      <li>Removed option for multiple downloads</li>
+      <li>Corrected a bug that prevented clustered data from being passed through this module again (useful for subclustering)</li>
+      <li>Changed the label for non-clustered sequences from "NC" to 0</li>
+      <li>Function explicitly ranks sequences instead of assuming that they are ranked; this is more important for R users than web users</li>
+    </ul>
+  <li>Cluster Diversity:</li>
+    <ul>
+      <li>Added seed sequence ID to output</li>
+      <li>Added option to visualize k-mer plot with UMAP</li>
+      <li>Added non-clustered sequence summary to the metaplots</li>
+      <li>Added option to visualize non-clustered sequences with k-mer plot</li>
+      <li>Added calculation for Simpson's Index of Diversity</li>
+    </ul>
+  <li>Position Enrich</li>
+    <ul>
+      <li>Moved from the "Enrichment" module suite to the "Cluster" module suite; input file was from Sequence Enrich but is now from Recluster</li>
+      <li>Module no longer operates on the intersection of two full populations; rather, it now operates on a single, aligned super-cluster</li>
+      <li>Module no longer 1) computes enrichment relative to a reference sequence, 2) imposes max or min enrichment values for scaling purposes in plots, 3) allows for ambiguities</li>
+      <li>Displays heat map data in data.table</li>
+      <li>Bar plot and heat map are now accessed via pop-up windows</li>
+    </ul>
+  <li>Preprocess:</li>
+    <ul>
+      <li>Fuzzy trimming for constant regions, quality filtering, length filtering</li>
+      <li>Supports GZ-compressed file inputs, but the same constraints described in the Count module apply here</li>
+    </ul>
+  <li>Recount:</li>
+    <ul>
+      <li>Concatenates multiple counted FASTA files (good if the inputs to Count are too large to be uploaded together)</li>
+    </ul>
+  <li>Motif Omit:</li>
+    <ul>
+      <li>Omits sequences with one or more user-defined motifs</li>
+    </ul>
+  <li>Differential Analysis:</li>
+    <ul>
+      <li>edgeR-based differential analysis testing with replicates in two conditions</li>
+      <li>Includes visualization of logCPM vs logFC</li>
+    </ul>
+  <li>Cluster Inspect:</li>
+    <ul>
+      <li>Generate MSA for single sequence cluster</li>
+      <li>Visualize MSA with 1) entropy by position and 2) mutual information between positions</li>
+    </ul>
+  <li>Cluster PHMM:</li>
+    <ul>
+      <li>Derives PHMM from MSA and simulates sequences from PHMM</li>
+    </ul>
+  <li>Recluster:</li>
+    <ul>
+      <li>Merges clusters from multiple rounds based on the LED between cluster seeds</li>
+      <li>Visualizes distances between cluster seeds as heat map</li>
+      <li>Visualizes population contribution to each new cluster</li>
+      <li>Visualizes average RPU per cluster per population</li>
+      <li>Visualizes average LED to cluster seed per cluster per population</li>
+      <li>Visualizes box plot of enrichment</li>
+    </ul>
+</ul>
+
+<p>Known issues:</p>
+<ul>
+  <li>Plotly does not allow customized legend positions, bold text for legend titles, or outlines for geom_tile layers in ggplot2</li>
+</ul>
+
+<p>Ongoing:</p>
+<ul>
+  <li>Modules:</li>
+    <ul>
+      <li>MSA: more meaningful substitution matrix</li>
+      <li>Motif Discover: allow non-nucleotide alphabets</li>
+    </ul>
+  <li>Package deployment (https://martinctc.github.io/blog/make-package-even-more-awesome/):</li>
+    <ul>
+      <li>R package with roxygen2</li>
+      <li>Shiny package with golem or leprechaun; ideally in the same R package</li>
+	  <li>package website with pkgdown</li>
+	  <li>GitHub integration</li>
+	  <li>automated R CMD checks with GitHub Actions</li>
+	  <li>CodeFactor automated review (a badege on the GitHub)</li>
+	  <li>Badger badges (for the GitHub)</li>
+	  <li>Convential commits in change log</li>
+	  <li>Package startup message with .onAttach function</li>
+	  <li>hex sticker with hexSticker or hexmake</li>
+	  <li>CRAN submission</li>
+    </ul>
+  <li>Testing:</li>
+    <ul>
+      <li>Load testing with shinyloadtest</li>
+      <li>Reactivity testing with shiny::testServer (may need shinytest2 because of reliance on button clicks)</li>
+      <li>Integration testing (AKA UI testing or JS testing or end-to-end testing) with shinytest2</li>
+      <li>Unit testing for R package</li>
+      <li>Unit testing for Shiny package</li>
+    </ul>
+</ul>

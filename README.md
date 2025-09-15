@@ -21,3 +21,7 @@ Final documentation:
 1. R manual for users based in R; explicitly documents the codebase, including all function arguments, outputs, etc.
 2. R vignettes for users based in R; shows examples of how to use the codebase, interpret outputs, etc.
 3. User guide for users based in Docker or the web app; shows examples of how to use the user interface
+
+Run app in you local:
+1. Modify the project_path in launch.R to your own local path （project_path <- "C:/Users/yqzn9/Documents/GitHub/FASTAptameR3" ）
+2. Then run script: launch.R 

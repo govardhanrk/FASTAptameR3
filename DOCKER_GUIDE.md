@@ -14,9 +14,9 @@
 7. [Manage Containers](#manage-containers)
 8. [Troubleshooting](#troubleshooting)
 
----
 
-## What is Docker? {#what-is-docker}
+
+## What is Docker?
 
 **Docker** packages software and all dependencies into a single container, avoiding installation hassles and version conflicts.
 
@@ -25,18 +25,18 @@
 - Works the same on Windows, macOS, and Linux
 - Easy updates and sharing
 
----
 
-## System Requirements {#system-requirements}
+
+## System Requirements
 
 - **Administrative rights** to install applications
 - **Stable internet connection** (to download Docker Desktop and the FASTAptameR3 image)
 - Disk space: ~2–5 GB free
 - Windows and macOS specifics are below
 
----
 
-## Install Docker Desktop {#install-docker-desktop}
+
+## Install Docker Desktop
 
 ### 🪟 Windows 10/11
 
@@ -62,9 +62,9 @@
 
 > **Note:** Apple Silicon users may need to install Rosetta if prompted.
 
----
 
-## Find & Pull the Image {#find--pull-the-image}
+
+## Find & Pull the Image
 
 **Repository:** `yongfangqin/fastaptamer3:latest`
 
@@ -86,9 +86,9 @@
 docker pull yongfangqin/fastaptamer3:latest
 ```
 
----
 
-## Run the Container {#run-the-container}
+
+## Run the Container
 
 **Port:** FASTAptameR3 runs on port `3838` inside the container
 
@@ -117,9 +117,9 @@ docker run --rm -p 3838:3838 yongfangqin/fastaptamer3:latest
 - `-p 3838:3838` maps your computer's port 3838 to the app's port 3838
 - `--rm` automatically removes the container when stopped
 
----
 
-## Access the App {#access-the-app}
+
+## Access the App
 
 1. **Open browser** to `http://localhost:3838`
    - If you used a different port (e.g., 3839): `http://localhost:3839`
@@ -127,9 +127,9 @@ docker run --rm -p 3838:3838 yongfangqin/fastaptamer3:latest
 
 > ✅ **Success!** You should see the FASTAptameR3 web interface.
 
----
 
-## Manage Containers {#manage-containers}
+
+## Manage Containers
 
 ### 🛑 Stop the App
 - **Docker Desktop:** Go to **Containers** → Click stop button (⏹️)
@@ -144,9 +144,9 @@ docker run --rm -p 3838:3838 yongfangqin/fastaptamer3:latest
 - **Docker Desktop:** Use **Delete** button on stopped containers/unused images
 - **Command line:** `docker system prune` (removes unused containers/images)
 
----
 
-## Troubleshooting {#troubleshooting}
+
+## Troubleshooting
 
 ### 🚫 Port Already in Use
 **Problem:** Browser shows error or Docker won't start  
@@ -168,7 +168,7 @@ docker run --rm -p 3838:3838 yongfangqin/fastaptamer3:latest
 **Problem:** Architecture warnings  
 **Solution:** Ensure you downloaded the correct Docker Desktop build for Apple Silicon
 
----
+
 
 ## 📞 Need Help?
 

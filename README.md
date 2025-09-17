@@ -8,6 +8,7 @@ High-level file details are in the commit messages. In brief:
 - app.R: links UI and server
 - LICENSE.txt: FA2 license
 - UserGuide.pdf: FA2 user guide
+- DOCKER_GUIDE.md: step-by-step Docker instructions (Windows/macOS)
 
 TODO:
 - Deploy R package to GitHub (easiest option), CRAN (longest wait), or BioConductor (needs full rewrite to be compatible)
@@ -25,3 +26,8 @@ Final documentation:
 Run app in you local:
 1. Modify the project_path in launch.R to your own local path （project_path <- "C:/Users/yqzn9/Documents/GitHub/FASTAptameR3" ）
 2. Then run script: launch.R 
+
+Prefer a no-install experience? Run the app in Docker.
+
+- Quick start guide: see `DOCKER_GUIDE.md` (Windows & macOS)
+- Published image: `yongfangqin/fastaptamer3:latest`
